@@ -1,0 +1,14 @@
+spring:
+  profiles:
+    active: dev
+  jpa:
+    hibernate:
+      ddl-auto: create
+  #  默认返回驼峰名形式, 返回时间戳
+  jackson:
+#    property-naming-strategy: SNAKE_CASE
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: true
+sharing:
+  api-package: io.github.xmchxup.backend.api
+  year-codes: A,B,C,D,E,F,G,H,I,J,K,L
