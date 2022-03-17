@@ -1,6 +1,5 @@
 package io.github.xmchxup.backend.util;
 
-import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -65,10 +64,4 @@ public class Jackson2Test {
         log.info(mapper.readValue(s, Map.class).toString());
     }
 
-    @Test
-    public void testCamel() throws JsonProcessingException {
-        String str = "userAge";
-        String s = StrUtil.toUnderlineCase(str);
-        log.info(s);
-    }
 }
