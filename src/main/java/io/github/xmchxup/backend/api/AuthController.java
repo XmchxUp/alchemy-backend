@@ -1,9 +1,10 @@
 package io.github.xmchxup.backend.api;
 
-import io.github.xmchxup.backend.core.security.JwtTokenProvider;
-import io.github.xmchxup.backend.dto.LoginDTO;
-import io.github.xmchxup.backend.dto.SignUpDTO;
-import io.github.xmchxup.backend.enumeration.RoleName;
+import io.github.xmchxup.backend.core.security.JwtTokenUtils;
+import io.github.xmchxup.backend.core.security.JwtUser;
+import io.github.xmchxup.backend.dto.LoginRequest;
+import io.github.xmchxup.backend.dto.SignUpRequest;
+import io.github.xmchxup.backend.enumeration.RoleType;
 import io.github.xmchxup.backend.exception.http.ForbiddenException;
 import io.github.xmchxup.backend.exception.http.NotFoundException;
 import io.github.xmchxup.backend.exception.http.ParameterException;
@@ -16,13 +17,9 @@ import io.github.xmchxup.backend.vo.JwtAuthenticationResponseVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,18 +31,17 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author huayang (sunhuayangak47@gmail.com)
  */
-@Api(tags = "权限管理")
+@Api(tags = "认证")
 @Validated
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-    @Autowired
-    AuthenticationManager authenticationManager;
-
     @Autowired
     UserRepository userRepository;
 
@@ -55,35 +51,43 @@ public class AuthController {
     @Autowired
     PasswordEncoder passwordEncoder;
 
-    @Autowired
-    JwtTokenProvider tokenProvider;
-
     @ApiOperation("登陆")
     @PostMapping("/signin")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginDTO loginRequest) {
-        try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            loginRequest.getUsernameOrEmail(),
-                            loginRequest.getPassword()
-                    )
-            );
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+        String usernameOrEmail = loginRequest.getUsernameOrEmail();
+        User user = userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
+                .orElseThrow(() -> new ParameterException(20004));
 
-            String jwt = tokenProvider.generateToken(authentication);
-            return ResponseEntity.ok(new JwtAuthenticationResponseVO(jwt));
-        } catch (DisabledException e) {
-            throw new ForbiddenException(20006);
-        } catch (BadCredentialsException e) {
-            throw new ForbiddenException(10004);
-        } catch (Exception e) {
-            throw new RuntimeException();
+        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+            throw new ParameterException(20005);
         }
+
+        JwtUser jwtUser = JwtUser.create(user);
+        if (!jwtUser.isEnabled()) {
+            throw new ForbiddenException(20006);
+        }
+
+        List<String> authorities = jwtUser.getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
+        String token = JwtTokenUtils.createToken(user.getUsername(),
+                user.getId().toString(),
+                authorities,
+                loginRequest.getRememberMe());
+        return ResponseEntity.ok(new JwtAuthenticationResponseVO(token));
     }
 
-    @ApiOperation("注册")
+
+    @PostMapping("/logout")
+    @ApiOperation("退出")
+    public ResponseEntity<Void> logout() {
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @ApiOperation("用户注册")
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpDTO signUpRequest) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
             throw new ParameterException(20002);
         }
@@ -102,7 +106,7 @@ public class AuthController {
                 .build();
 
 
-        Role userRole = roleRepository.findByName(RoleName.ROLE_USER)
+        Role userRole = roleRepository.findByName(RoleType.ROLE_USER)
                 .orElseThrow(() -> new NotFoundException(3011));
 
         user.setRoles(Collections.singleton(userRole));

@@ -2,11 +2,13 @@ package io.github.xmchxup.backend.core;
 
 import io.github.xmchxup.backend.core.configuration.ExceptionCodeConfiguration;
 import io.github.xmchxup.backend.exception.http.HttpException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -22,6 +24,7 @@ import java.util.List;
 /**
  * @author huayang (sunhuayangak47@gmail.com)
  */
+@Slf4j
 @ControllerAdvice
 public class GlobalExceptionAdvice {
 
@@ -101,5 +104,17 @@ public class GlobalExceptionAdvice {
                 errorMsg.append(error.getDefaultMessage()).append(";")
         );
         return errorMsg.toString();
+    }
+
+    /**
+     * AccessDeniedException无权限异常
+     */
+    @ExceptionHandler(value = AccessDeniedException.class)
+    @ResponseBody
+    public UnifyResponse exceptionHandler(HttpServletRequest req, AccessDeniedException e) {
+        log.warn("认证用户，没有权限访问! Message - {}", e.getMessage());
+        String url = req.getRequestURI();
+        String method = req.getMethod();
+        return new UnifyResponse(10001, e.getMessage(), method + " " + url);
     }
 }

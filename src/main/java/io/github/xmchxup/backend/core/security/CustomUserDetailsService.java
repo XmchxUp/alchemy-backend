@@ -27,6 +27,6 @@ public class CustomUserDetailsService implements UserDetailsService {
                         new NotFoundException(20001)
                 );
 
-        return UserPrincipal.create(user);
+        return JwtUser.create(user);
     }
 }

@@ -1,5 +1,6 @@
 package io.github.xmchxup.backend.core.configuration;
 
+import io.github.xmchxup.backend.core.security.SecurityConstants;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.PathSelectors;
@@ -22,11 +23,11 @@ public class SwaggerConfig {
 
     // http://localhost:9999/swagger-ui/index.html
     private ApiInfo apiInfo() {
-        return new ApiInfo("MyApp Rest APIs",
-                "APIs for MyApp.",
+        return new ApiInfo("社区APIs",
+                "By Tesla.",
                 "1.0",
                 "Terms of service",
-                new Contact("test", "www.org.com", "test@emaildomain.com"),
+                new Contact("Tesla", "www.xmchxup.io.github", "sunhuayang@gmail.com"),
                 "License of API",
                 "API license URL",
                 Collections.emptyList());
@@ -45,17 +46,20 @@ public class SwaggerConfig {
     }
 
     private ApiKey apiKey() {
-        return new ApiKey("JWT", "Authorization", "header");
+        return new ApiKey(SecurityConstants.TOKEN_HEADER, "JWT", "header");
     }
 
     private SecurityContext securityContext() {
-        return SecurityContext.builder().securityReferences(defaultAuth()).build();
+        return SecurityContext.builder()
+                .securityReferences(defaultAuth())
+                .build();
     }
 
-    private List<SecurityReference> defaultAuth() {
-        AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
+    List<SecurityReference> defaultAuth() {
+        AuthorizationScope authorizationScope
+                = new AuthorizationScope("global", "accessEverything");
         AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
         authorizationScopes[0] = authorizationScope;
-        return Arrays.asList(new SecurityReference("JWT", authorizationScopes));
+        return Arrays.asList(new SecurityReference(SecurityConstants.TOKEN_HEADER, authorizationScopes));
     }
 }

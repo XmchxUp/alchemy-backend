@@ -9,7 +9,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @author huayang (sunhuayangak47@gmail.com)
  */
 @Configuration
-public class WebMvcConfig implements WebMvcConfigurer {
+public class CorsConfiguration implements WebMvcConfigurer {
     @Value("${sharing.cors.allowedOrigins}")
     private String[] allowedOrigins;
 
@@ -24,6 +24,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
 //                .allowedOrigins("*")
                 .allowedOrigins(allowedOrigins)
+                //暴露header中的其他属性给客户端应用程序
+                //如果不设置这个属性前端无法通过response header获取到Authorization也就是token
+                .exposedHeaders("Authorization")
                 .allowedMethods("GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowCredentials(true)
                 .maxAge(3600)

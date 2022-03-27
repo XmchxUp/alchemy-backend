@@ -12,7 +12,5 @@ spring:
 sharing:
   api-package: io.github.xmchxup.backend.api
   year-codes: A,B,C,D,E,F,G,H,I,J,K,L
-  #  7天
-  jwtExpirationInMs: 604800000
   cors:
     allowedOrigins: http://localhost:3000

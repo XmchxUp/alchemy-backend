@@ -10,7 +10,7 @@ import javax.validation.constraints.Size;
  * @author huayang (sunhuayangak47@gmail.com)
  */
 @Data
-public class SignUpDTO {
+public class SignUpRequest {
     @NotBlank
     @Size(min = 4, max = 40)
     private String nickname;

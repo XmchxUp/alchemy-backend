@@ -10,10 +10,10 @@ import javax.validation.constraints.NotBlank;
  */
 @Getter
 @Setter
-public class LoginDTO {
+public class LoginRequest {
     @NotBlank
     private String usernameOrEmail;
-
     @NotBlank
     private String password;
+    private Boolean rememberMe;
 }

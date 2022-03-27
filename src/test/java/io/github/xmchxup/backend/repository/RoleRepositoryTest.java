@@ -1,6 +1,6 @@
 package io.github.xmchxup.backend.repository;
 
-import io.github.xmchxup.backend.enumeration.RoleName;
+import io.github.xmchxup.backend.enumeration.RoleType;
 import io.github.xmchxup.backend.model.Role;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +14,11 @@ public class RoleRepositoryTest {
     @Autowired
     RoleRepository roleRepository;
 
+
+
     @Test
     public void testInert() {
         roleRepository.save(Role.builder()
-                .name(RoleName.ROLE_ADMIN).build());
-
+                .name(RoleType.ROLE_ADMIN).build());
     }
 }
