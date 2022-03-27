@@ -10,7 +10,3 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
-sharing:
-  security:
-    jwt-key: XmchxCoder
-    token-expired-in: 86400000

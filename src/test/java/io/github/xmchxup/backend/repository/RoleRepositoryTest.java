@@ -18,5 +18,6 @@ public class RoleRepositoryTest {
     public void testInert() {
         roleRepository.save(Role.builder()
                 .name(RoleName.ROLE_ADMIN).build());
+
     }
 }

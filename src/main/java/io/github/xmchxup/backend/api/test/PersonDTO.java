@@ -1,4 +1,4 @@
-package io.github.xmchxup.backend.api.v1;
+package io.github.xmchxup.backend.api.test;
 
 import lombok.Getter;
 import lombok.Setter;

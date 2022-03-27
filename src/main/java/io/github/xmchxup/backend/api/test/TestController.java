@@ -1,4 +1,4 @@
-package io.github.xmchxup.backend.api.v1;
+package io.github.xmchxup.backend.api.test;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -11,12 +11,12 @@ import javax.validation.constraints.NotBlank;
  * @author huayang (sunhuayangak47@gmail.com)
  */
 @RestController
-@RequestMapping("/v1/test")
-@Api(tags = "用户管理")
+@RequestMapping("/api/test")
+@Api(tags = "小测试")
 @Validated
 public class TestController {
 
-    @ApiOperation("用户列表")
+    @ApiOperation("Hello测试")
     @GetMapping("/hello")
     public String hello(@NotBlank String name) {
         return "Hello, " + name;

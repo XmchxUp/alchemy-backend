@@ -24,7 +24,7 @@ public class User extends BaseEntity {
 
     private String nickname;
 
-    private Long unifyUid;
+    private String username;
 
     private String email;
 
