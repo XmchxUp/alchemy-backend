@@ -3,7 +3,7 @@ spring:
     active: dev
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
   #  默认返回驼峰名形式, 返回时间戳
   jackson:
 #    property-naming-strategy: SNAKE_CASE
