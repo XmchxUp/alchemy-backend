@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 /**
  * @author huayang (sunhuayangak47@gmail.com)
  */
-@Api(tags = "认证")
+@Api(tags = "认证API")
 @Validated
 @RestController
 @RequestMapping("/api/auth")
@@ -80,7 +80,7 @@ public class AuthController {
 
 
     @PostMapping("/logout")
-    @ApiOperation("退出")
+    @ApiOperation("登出")
     public ResponseEntity<Void> logout() {
         return new ResponseEntity<>(HttpStatus.OK);
     }

@@ -20,7 +20,7 @@ import java.util.List;
 @Configuration
 public class SwaggerConfig {
 
-
+// 在网页版Swagger中配置Token 形式为 Bearer accessToken
     // http://localhost:9999/swagger-ui/index.html
     private ApiInfo apiInfo() {
         return new ApiInfo("社区APIs",

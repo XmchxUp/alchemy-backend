@@ -18,14 +18,14 @@ import java.time.LocalDate;
 @Validated
 public class TestController {
 
-    @ApiOperation("Hello测试")
+    @ApiOperation("带有USER权限的Hello测试")
     @PreAuthorize("hasAnyRole('ROLE_USER')")
     @GetMapping("/hello")
     public String hello(@NotBlank String name) {
         return "Hello, " + name;
     }
 
-    @ApiOperation("Root Date测试")
+    @ApiOperation("带有ADMIN权限Root Date测试")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping("/date")
     public LocalDate date() {
@@ -38,6 +38,7 @@ public class TestController {
         return "Tesla";
     }
 
+    @ApiOperation("带有参数检验的测试")
     @PostMapping("/t1")
     public String test(@Validated @RequestBody PersonDTO p) {
         return p.getTotalPrice().toString();

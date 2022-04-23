@@ -36,7 +36,7 @@ public class JwtTokenUtils {
         long expiration = isRememberMe ? SecurityConstants.EXPIRATION_REMEMBER : SecurityConstants.EXPIRATION;
         final Date createdDate = new Date();
         final Date expirationDate = new Date(createdDate.getTime() + expiration * 1000);
-        String tokenPrefix = Jwts.builder()
+        String token = Jwts.builder()
                 .setHeaderParam("type", SecurityConstants.TOKEN_TYPE)
                 .signWith(SECRET_KEY, SignatureAlgorithm.HS256)
                 .claim(SecurityConstants.ROLE_CLAIMS, String.join(",", roles))
@@ -46,7 +46,7 @@ public class JwtTokenUtils {
                 .setSubject(username)
                 .setExpiration(expirationDate)
                 .compact();
-        return SecurityConstants.TOKEN_PREFIX + tokenPrefix; // 添加 token 前缀 "Bearer ";
+        return token;
     }
 
     private boolean isTokenExpired(String token) {

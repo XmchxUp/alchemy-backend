@@ -11,9 +11,9 @@ import javax.validation.constraints.NotBlank;
 @Getter
 @Setter
 public class LoginRequest {
-    @NotBlank
+    @NotBlank(message = "账号不能为空")
     private String usernameOrEmail;
-    @NotBlank
+    @NotBlank(message = "密码不能为空")
     private String password;
     private Boolean rememberMe;
 }

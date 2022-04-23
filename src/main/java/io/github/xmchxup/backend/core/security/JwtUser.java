@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -18,9 +19,11 @@ import java.util.stream.Collectors;
 public class JwtUser implements UserDetails {
     private Long id;
     private String username;
-    private Boolean enabled;
+    private String nickname;
+    private String email;
     @JsonIgnore
     private String password;
+    private Boolean enabled;
 
     private Collection<? extends GrantedAuthority> authorities;
 
@@ -32,10 +35,24 @@ public class JwtUser implements UserDetails {
         return new JwtUser(
                 user.getId(),
                 user.getUsername(),
-                user.getEnabled() == null ? true : user.getEnabled(),
+                user.getNickname(),
+                user.getEmail(),
                 user.getPassword(),
+                user.getEnabled() == null ? true : user.getEnabled(),
                 authorities
         );
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getNickname() {
+        return nickname;
     }
 
     @Override
@@ -81,5 +98,19 @@ public class JwtUser implements UserDetails {
                 ", password='" + password + '\'' +
                 ", authorities=" + authorities +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        JwtUser that = (JwtUser) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(id);
     }
 }
