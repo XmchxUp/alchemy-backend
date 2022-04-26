@@ -34,6 +34,10 @@ public class User extends BaseEntity {
 
     private Boolean enabled;
 
+    private String motto;
+
+    private String avatar;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),

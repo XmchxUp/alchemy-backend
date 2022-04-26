@@ -112,6 +112,8 @@ public class AuthController {
                 .password(passwordEncoder.encode(
                         signUpRequest.getPassword()
                 ))
+                .avatar("https://cdn.jsdelivr.net/gh/XmchxUp/cloudimg@master/partywizard.4ar7hnvogr00.gif")
+                .motto("You can learn anything. (By Tesla)")
                 .build();
 
 
