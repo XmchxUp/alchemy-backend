@@ -16,10 +16,14 @@ import io.github.xmchxup.backend.vo.ApiResponseVO;
 import io.github.xmchxup.backend.vo.JwtAuthenticationResponseVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,33 +45,34 @@ import java.util.stream.Collectors;
 @Validated
 @RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AuthController {
-    @Autowired
-    UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    RoleRepository roleRepository;
+    private final RoleRepository roleRepository;
 
-    @Autowired
-    PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
+
+    private final AuthenticationManager authenticationManager;
 
     @ApiOperation("登陆")
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-        String usernameOrEmail = loginRequest.getUsernameOrEmail();
-        User user = userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
-                .orElseThrow(() -> new ParameterException(20004));
+        var authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginRequest.getUsernameOrEmail(),
+                        loginRequest.getPassword()
+                )
+        );
 
-        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            throw new ParameterException(20005);
-        }
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        JwtUser jwtUser = JwtUser.create(user);
-        if (!jwtUser.isEnabled()) {
+        JwtUser user = (JwtUser) authentication.getPrincipal();
+        if (!user.isEnabled()) {
             throw new ForbiddenException(20006);
         }
 
-        List<String> authorities = jwtUser.getAuthorities()
+        List<String> authorities = user.getAuthorities()
                 .stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
@@ -82,6 +87,10 @@ public class AuthController {
     @PostMapping("/logout")
     @ApiOperation("登出")
     public ResponseEntity<Void> logout() {
+        // TODO: 云服务器资源不足
+        // token一但发布 就不能回收，直到过期
+        // 上面rememberMe就是用来延长过期时间的
+        // 解决方案可以使用Redis来保存user:token信息，每次判断token是否于redis中的是否相等
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
