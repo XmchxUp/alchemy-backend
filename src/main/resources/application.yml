@@ -6,11 +6,14 @@ spring:
       ddl-auto: none
   #  默认返回驼峰名形式, 返回时间戳
   jackson:
-#    property-naming-strategy: SNAKE_CASE
+    #    property-naming-strategy: SNAKE_CASE
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: true
 sharing:
   api-package: io.github.xmchxup.backend.api
   year-codes: A,B,C,D,E,F,G,H,I,J,K,L
+  clientId: be4f2d1a98976190b2ff
+  clientSecret: 4efbaffc85f73e91d16464edb14b2292707b07df
   cors:
     allowedOrigins: http://localhost:3000
+
