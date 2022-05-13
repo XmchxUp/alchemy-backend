@@ -11,10 +11,12 @@ public class UserSummaryVo {
     private Long id;
     private String username;
     private String nickname;
+    private String avatar;
 
     public UserSummaryVo(User user) {
         this.id = user.getId();
         this.username = user.getUsername();
         this.nickname = user.getNickname();
+        this.avatar = user.getAvatar();
     }
 }
