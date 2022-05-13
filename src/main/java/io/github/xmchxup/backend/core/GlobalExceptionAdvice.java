@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
@@ -41,6 +42,15 @@ public class GlobalExceptionAdvice {
 
         return new UnifyResponse(9999, codeConfiguration.getMessage(9999), method + " " + url);
     }
+
+    @ExceptionHandler(value = MaxUploadSizeExceededException.class)
+    public UnifyResponse handleUploadFileException(HttpServletRequest req, HttpException e) {
+        String url = req.getRequestURI();
+        String method = req.getMethod();
+
+        return new UnifyResponse(30004, codeConfiguration.getMessage(30004), method + " " + url);
+    }
+
 
     //	已知异常
     @ExceptionHandler(value = HttpException.class)

@@ -2,6 +2,7 @@ package io.github.xmchxup.backend.core.configuration;
 
 import io.github.xmchxup.backend.core.security.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -50,6 +51,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
+    @Value("${file.staticAccessPath}")
+    private String staticAccessPath;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and()
@@ -58,6 +62,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // 指定的接口直接放行
                 // swagger
                 .antMatchers(SecurityConstants.SWAGGER_WHITELIST).permitAll()
+                .antMatchers(HttpMethod.GET, staticAccessPath).permitAll()
                 .antMatchers(HttpMethod.POST, SecurityConstants.SYSTEM_WHITELIST).permitAll()
                 // 其他的接口都需要认证后才能请求
                 .anyRequest().authenticated()
