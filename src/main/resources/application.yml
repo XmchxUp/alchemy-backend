@@ -9,6 +9,10 @@ spring:
     #    property-naming-strategy: SNAKE_CASE
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: true
+  servlet:
+    multipart:
+      max-file-size: 200MB
+
 sharing:
   api-package: io.github.xmchxup.backend.api
   year-codes: A,B,C,D,E,F,G,H,I,J,K,L
@@ -17,3 +21,10 @@ sharing:
   cors:
     allowedOrigins: http://localhost:3000
 
+file:
+  # 上传的服务器上的映射文件夹
+  accessPath: /upload/
+  # 静态资源对外暴露的访问路径
+  staticAccessPath: /upload/**
+  #  文件上传目录
+  uploadFolder: C://upload/

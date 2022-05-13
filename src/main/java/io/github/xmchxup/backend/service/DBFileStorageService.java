@@ -3,6 +3,7 @@ package io.github.xmchxup.backend.service;
 import io.github.xmchxup.backend.exception.http.ServerErrorException;
 import io.github.xmchxup.backend.model.DBFile;
 import io.github.xmchxup.backend.repository.DBFileRepository;
+import io.jsonwebtoken.lang.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -16,16 +17,23 @@ public class DBFileStorageService {
     @Autowired
     private DBFileRepository dbFileRepository;
 
-    public DBFile storeFile(MultipartFile file){
+    @Autowired
+    private LocalUploadService localUploadService;
+
+    public DBFile storeFile(MultipartFile file) {
         // Normalize file name
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
 
         try {
-            if(fileName.contains("..")) {
+            if (fileName.contains("..")) {
                 throw new ServerErrorException(30002);
             }
 
-            DBFile dbFile = new DBFile(fileName,file.getContentType(), file.getBytes());
+            if (Strings.startsWithIgnoreCase(file.getContentType(), "image")) {
+                localUploadService.storeImage(file);
+            }
+
+            DBFile dbFile = new DBFile(fileName, file.getContentType(), file.getBytes());
 
             return dbFileRepository.save(dbFile);
         } catch (IOException ex) {

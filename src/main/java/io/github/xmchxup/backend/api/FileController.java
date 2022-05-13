@@ -33,13 +33,14 @@ public class FileController {
     private DBFileStorageService dbFileStorageService;
 
     @ApiOperation("上传单个文件")
-    @PostMapping("/uploadFile")
-    @ApiImplicitParam(name = "file", value = "单个文件", required = true, dataType = "__file")
-    public UploadFileResponseVo uploadFile(@RequestParam("file")MultipartFile file) {
+    @PostMapping(value = "/upload", consumes = {
+            "multipart/form-data"
+    })
+    public UploadFileResponseVo uploadFile(@RequestPart("file") MultipartFile file) {
         DBFile dbFile = dbFileStorageService.storeFile(file);
 
         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/downloadFile/")
+                .path("/api/file/download/")
                 .path(dbFile.getId())
                 .toUriString();
         return new UploadFileResponseVo(dbFile.getFileName(), fileDownloadUri,
@@ -47,19 +48,22 @@ public class FileController {
     }
 
     @ApiOperation("上传多个文件")
-    @PostMapping("/uploadMultipleFiles")
+    @PostMapping(value = "/uploadMultipleFiles", consumes = {
+            "multipart/form-data"
+    })
     @ApiImplicitParams({
             @ApiImplicitParam(name = "files", value = "多个文件", allowMultiple = true, dataType = "__file")
     })
-    public List<UploadFileResponseVo> uploadMultipleFiles(@RequestParam(value = "files", required = true) MultipartFile[] files) {
+    public List<UploadFileResponseVo> uploadMultipleFiles(
+            @RequestPart(value = "files") MultipartFile[] files) {
         return Arrays.stream(files)
                 .map(this::uploadFile)
                 .collect(Collectors.toList());
     }
 
     @ApiOperation("下载")
-    @GetMapping("/downloadFile/{fileId}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable String fileId) {
+    @GetMapping("/download/{fileId}")
+    public ResponseEntity<Resource> downloadFile(@RequestParam("fileId") String fileId) {
         DBFile dbFile = dbFileStorageService.getFile(fileId);
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(dbFile.getFileType()))

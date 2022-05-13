@@ -43,7 +43,9 @@ public class SecurityConstants {
     // System WHITELIST
     public static final String[] SYSTEM_WHITELIST = {
             "/api/auth/**",
-            "/api/test/**"
+            "/api/test/**",
+            "/api/file/download/**",
+            "/upload/**"
     };
 
     private SecurityConstants() {
