@@ -14,8 +14,6 @@ public class RoleRepositoryTest {
     @Autowired
     RoleRepository roleRepository;
 
-
-
     @Test
     public void testInert() {
         roleRepository.save(Role.builder()
