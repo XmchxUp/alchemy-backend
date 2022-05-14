@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
  * @author huayang (sunhuayangak47@gmail.com)
  */
 @Slf4j
-@Api(tags = "认证API")
+@Api(tags = "权限模块")
 @Validated
 @RestController
 @RequestMapping("/api/auth")
