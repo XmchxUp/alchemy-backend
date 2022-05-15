@@ -44,19 +44,4 @@ public class User extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", nickname='" + nickname + '\'' +
-                ", username='" + username + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", mobile='" + mobile + '\'' +
-                ", enabled=" + enabled +
-                ", motto='" + motto + '\'' +
-                ", avatar='" + avatar + '\'' +
-                ", roles=" + roles +
-                '}';
-    }
 }
