@@ -44,6 +44,14 @@ public class UserController {
         return new UserSummaryVo(currentUser);
     }
 
+    @ApiOperation("通过uid获取用户信息")
+    @GetMapping("/user/{id}")
+    @PreAuthorize("hasRole('USER')")
+    public UserSummaryVo getUserInfo(@PathVariable Long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new ParameterException(20004));
+        return new UserSummaryVo(user);
+    }
+
     @ApiOperation("根据用户Id获取所有文件信息")
     @GetMapping("/user/{userId}/files")
     @PreAuthorize("hasRole('USER')")

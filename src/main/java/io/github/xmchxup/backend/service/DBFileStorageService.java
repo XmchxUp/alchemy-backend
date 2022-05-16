@@ -6,7 +6,6 @@ import io.github.xmchxup.backend.exception.http.ServerErrorException;
 import io.github.xmchxup.backend.model.DBFile;
 import io.github.xmchxup.backend.model.User;
 import io.github.xmchxup.backend.repository.DBFileRepository;
-import io.jsonwebtoken.lang.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,9 +22,6 @@ public class DBFileStorageService {
     private DBFileRepository dbFileRepository;
 
     @Autowired
-    private LocalUploadService localUploadService;
-
-    @Autowired
     private CurrentUserUtils currentUserUtils;
 
     public DBFile storeFile(MultipartFile file) {
@@ -39,10 +35,6 @@ public class DBFileStorageService {
         try {
             if (fileName.contains("..")) {
                 throw new ServerErrorException(30002);
-            }
-
-            if (Strings.startsWithIgnoreCase(file.getContentType(), "image")) {
-                localUploadService.storeImage(file);
             }
 
             DBFile dbFile = DBFile.builder()
