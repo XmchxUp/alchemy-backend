@@ -2,8 +2,10 @@ package io.github.xmchxup.backend.api;
 
 import io.github.xmchxup.backend.model.DBFile;
 import io.github.xmchxup.backend.service.DBFileStorageService;
+import io.github.xmchxup.backend.service.LocalUploadService;
 import io.github.xmchxup.backend.vo.ApiResponseVO;
 import io.github.xmchxup.backend.vo.UploadFileResponseVo;
+import io.jsonwebtoken.lang.Strings;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +34,8 @@ public class FileController {
     @Autowired
     private DBFileStorageService dbFileStorageService;
 
+    @Autowired
+    private LocalUploadService localUploadService;
 
     @ApiOperation("上传单个文件")
     @PostMapping(value = "/upload", consumes = {
@@ -41,12 +45,17 @@ public class FileController {
     public UploadFileResponseVo uploadFile(@RequestPart("file") MultipartFile file) {
         DBFile dbFile = dbFileStorageService.storeFile(file);
 
+        String image = "";
+        if (Strings.startsWithIgnoreCase(file.getContentType(), "image")) {
+            image = "http://localhost:9999" + localUploadService.storeImage(file);
+        }
+
         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/api/file/download/")
                 .path(dbFile.getId())
                 .toUriString();
         return new UploadFileResponseVo(dbFile.getFileName(), fileDownloadUri,
-                file.getContentType(), file.getSize());
+                file.getContentType(), image, file.getSize());
     }
 
     @ApiOperation("上传多个文件")

@@ -1,8 +1,7 @@
 package io.github.xmchxup.backend.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -13,6 +12,9 @@ import javax.persistence.*;
 @Setter
 @Entity
 @Table(name = "pins")
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Pin extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,6 +28,13 @@ public class Pin extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     @JsonIgnore
     private User owner;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinTable(name = "pins_category",
+            joinColumns = @JoinColumn(name = "pin_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id"))
+    @JsonIgnore
+    private Category category;
 
     @Override
     public String toString() {

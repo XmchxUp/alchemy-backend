@@ -11,5 +11,6 @@ public class UploadFileResponseVo {
     private String fileName;
     private String fileDownloadUri;
     private String fileType;
+    private String image;
     private long size;
 }
