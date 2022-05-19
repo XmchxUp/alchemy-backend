@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * @author huayang (sunhuayangak47@gmail.com)
@@ -37,6 +38,13 @@ public class Pin extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "category_id"))
     @JsonIgnore
     private Category category;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "pins_saved",
+            joinColumns = @JoinColumn(name = "pid"),
+            inverseJoinColumns = @JoinColumn(name = "id"))
+    @JsonIgnore
+    private List<PinSaved> saves;
 
     @Override
     public String toString() {

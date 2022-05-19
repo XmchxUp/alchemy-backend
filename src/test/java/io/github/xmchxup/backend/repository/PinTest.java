@@ -21,5 +21,11 @@ public class PinTest {
             System.out.println(pin);
             System.out.println(pin.getOwner());
         }
+
+        System.out.println("UID: 46 Created");
+        pinRepository.findAllCreatedByUserId(46L).forEach(System.out::println);
+
+        System.out.println("UID: 46 Saved");
+        pinRepository.findAllSavedByUserId(46L).forEach(System.out::println);
     }
 }

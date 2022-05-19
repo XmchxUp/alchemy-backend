@@ -5,9 +5,11 @@ import io.github.xmchxup.backend.dto.CreatePinDTO;
 import io.github.xmchxup.backend.exception.http.ParameterException;
 import io.github.xmchxup.backend.model.Category;
 import io.github.xmchxup.backend.model.Pin;
+import io.github.xmchxup.backend.model.PinSaved;
 import io.github.xmchxup.backend.model.User;
 import io.github.xmchxup.backend.repository.CategoryRepository;
 import io.github.xmchxup.backend.repository.PinRepository;
+import io.github.xmchxup.backend.repository.PinSavedRepository;
 import io.github.xmchxup.backend.vo.PinPureVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,11 +33,14 @@ public class PinService {
     @Autowired
     private CurrentUserUtils currentUserUtils;
 
+    @Autowired
+    private PinSavedRepository pinSavedRepository;
+
     public void createPin(CreatePinDTO pinDTO) {
         Category category = categoryRepository.findById(pinDTO.getCategoryId())
                 .orElseThrow(() -> new ParameterException(40001));
 
-        User user = getCurrentUser(pinDTO.getUserId());
+        User user = checkUser(pinDTO.getUserId());
 
         pinRepository.save(Pin.builder()
                 .title(pinDTO.getTitle())
@@ -49,17 +54,23 @@ public class PinService {
 
     @Transactional
     public void deletePin(Long pid) {
-        Pin pin = pinRepository.findById(pid).orElseThrow(() -> new ParameterException(40000));
-        getCurrentUser(pin.getOwner().getId());
+        Pin pin = pinRepository.findById(pid)
+                .orElseThrow(() -> new ParameterException(40000));
+        checkUser(pin.getOwner().getId());
         pinRepository.deleteById(pin.getId(), new Date());
     }
 
-
-    private User getCurrentUser(Long userId) {
-        User user = currentUserUtils.getCurrentUser().orElseThrow(() -> new ParameterException(20004));
+    private User checkUser(Long userId) {
+        User user = getCurrentUser();
         if (!user.getId().equals(userId)) {
             throw new ParameterException(40002);
         }
+        return user;
+    }
+
+    private User getCurrentUser() {
+        User user = currentUserUtils.getCurrentUser()
+                .orElseThrow(() -> new ParameterException(20004));
         return user;
     }
 
@@ -73,5 +84,24 @@ public class PinService {
     public Pin getPinById(Long pinId) {
         return pinRepository.findById(pinId)
                 .orElseThrow(() -> new ParameterException(40000));
+    }
+
+    public void userSavedPin(Long pid) {
+        User user = getCurrentUser();
+        pinSavedRepository.save(new PinSaved(null, pid, user.getId()));
+    }
+
+    public List<PinPureVo> getUserCreatedPins(Long uid) {
+        return pinRepository.findAllCreatedByUserId(uid)
+                .stream()
+                .map(PinPureVo::new)
+                .collect(Collectors.toList());
+    }
+
+    public List<PinPureVo> getUserSavedPins(Long uid) {
+        return pinRepository.findAllSavedByUserId(uid)
+                .stream()
+                .map(PinPureVo::new)
+                .collect(Collectors.toList());
     }
 }

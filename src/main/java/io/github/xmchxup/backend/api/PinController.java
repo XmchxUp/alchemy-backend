@@ -44,7 +44,7 @@ public class PinController {
     @PostMapping
     @PreAuthorize("hasRole('USER')")
     @ApiOperation("创建Pin")
-    public ResponseEntity<?> save(@Valid @RequestBody CreatePinDTO pinDTO) {
+    public ResponseEntity<?> savePin(@Valid @RequestBody CreatePinDTO pinDTO) {
         pinService.createPin(pinDTO);
         return ResponseEntity.ok(new ApiResponseVO(true, "发布成功"));
     }
@@ -55,5 +55,28 @@ public class PinController {
     public ResponseEntity<?> delete(@PathVariable Long pid) {
         pinService.deletePin(pid);
         return ResponseEntity.ok(new ApiResponseVO(true, "删除成功"));
+    }
+
+
+    @PostMapping("/saved")
+    @PreAuthorize("hasRole('USER')")
+    @ApiOperation("保存Pin")
+    public ResponseEntity<?> userSavePin(@RequestParam Long pid) {
+        pinService.userSavedPin(pid);
+        return ResponseEntity.ok(new ApiResponseVO(true, "操作成功"));
+    }
+
+    @GetMapping("/created")
+    @PreAuthorize("hasRole('USER')")
+    @ApiOperation("获取用户创建的所有Pin")
+    public ResponseEntity<?> userCreatedPin(@RequestParam Long uid) {
+        return ResponseEntity.ok(pinService.getUserCreatedPins(uid));
+    }
+
+    @GetMapping("/saved")
+    @PreAuthorize("hasRole('USER')")
+    @ApiOperation("获取用户保存的所有Pin")
+    public ResponseEntity<?> userSavedPin(@RequestParam Long uid) {
+        return ResponseEntity.ok(pinService.getUserSavedPins(uid));
     }
 }
