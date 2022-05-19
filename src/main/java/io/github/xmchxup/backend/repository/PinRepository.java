@@ -24,4 +24,6 @@ public interface PinRepository extends JpaRepository<Pin, Long> {
 
     @Query("select p from Pin p join p.saves s where s.uid = :uid and p.id = s.pid")
     List<Pin> findAllSavedByUserId(Long uid);
+
+    List<Pin> findAllByCategoryId(Long categoryId);
 }

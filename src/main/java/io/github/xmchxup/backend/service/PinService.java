@@ -3,7 +3,6 @@ package io.github.xmchxup.backend.service;
 import io.github.xmchxup.backend.core.security.CurrentUserUtils;
 import io.github.xmchxup.backend.dto.CreatePinDTO;
 import io.github.xmchxup.backend.exception.http.ParameterException;
-import io.github.xmchxup.backend.model.Category;
 import io.github.xmchxup.backend.model.Pin;
 import io.github.xmchxup.backend.model.PinSaved;
 import io.github.xmchxup.backend.model.User;
@@ -37,8 +36,7 @@ public class PinService {
     private PinSavedRepository pinSavedRepository;
 
     public void createPin(CreatePinDTO pinDTO) {
-        Category category = categoryRepository.findById(pinDTO.getCategoryId())
-                .orElseThrow(() -> new ParameterException(40001));
+        checkCategoryExist(pinDTO.getCategoryId());
 
         User user = checkUser(pinDTO.getUserId());
 
@@ -48,8 +46,12 @@ public class PinService {
                 .destination(pinDTO.getDestination())
                 .image(pinDTO.getImage())
                 .owner(user)
-                .category(category)
+                .categoryId(pinDTO.getCategoryId())
                 .build());
+    }
+
+    private void checkCategoryExist(Long cid) {
+        categoryRepository.findById(cid).orElseThrow(() -> new ParameterException(40001));
     }
 
     @Transactional
@@ -100,6 +102,13 @@ public class PinService {
 
     public List<PinPureVo> getUserSavedPins(Long uid) {
         return pinRepository.findAllSavedByUserId(uid)
+                .stream()
+                .map(PinPureVo::new)
+                .collect(Collectors.toList());
+    }
+
+    public List<PinPureVo> getPinsByCategoryId(Long cid) {
+        return pinRepository.findAllByCategoryId(cid)
                 .stream()
                 .map(PinPureVo::new)
                 .collect(Collectors.toList());

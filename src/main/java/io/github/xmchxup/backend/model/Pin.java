@@ -26,18 +26,12 @@ public class Pin extends BaseEntity {
     private String image;
     private String about;
     private String destination;
+    private Long categoryId;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     @JsonIgnore
     private User owner;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinTable(name = "pins_category",
-            joinColumns = @JoinColumn(name = "pin_id"),
-            inverseJoinColumns = @JoinColumn(name = "category_id"))
-    @JsonIgnore
-    private Category category;
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "pins_saved",
