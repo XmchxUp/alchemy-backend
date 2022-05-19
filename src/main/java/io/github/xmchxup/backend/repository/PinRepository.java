@@ -26,4 +26,7 @@ public interface PinRepository extends JpaRepository<Pin, Long> {
     List<Pin> findAllSavedByUserId(Long uid);
 
     List<Pin> findAllByCategoryId(Long categoryId);
+
+    @Query("select p from Pin p where lower(p.title) like lower(concat('%', :searchTerm,'%')) or lower(p.about) like lower(concat('%', :searchTerm,'%'))  order by p.createTime desc")
+    List<Pin> findByAboutOrTitle(String searchTerm);
 }

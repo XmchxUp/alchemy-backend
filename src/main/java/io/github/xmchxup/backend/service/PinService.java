@@ -11,6 +11,7 @@ import io.github.xmchxup.backend.repository.PinRepository;
 import io.github.xmchxup.backend.repository.PinSavedRepository;
 import io.github.xmchxup.backend.vo.PinPureVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -77,7 +78,7 @@ public class PinService {
     }
 
     public List<PinPureVo> getAllPins() {
-        return pinRepository.findAll()
+        return pinRepository.findAll(Sort.by(Sort.Direction.DESC, "createTime"))
                 .stream()
                 .map(PinPureVo::new)
                 .collect(Collectors.toList());
@@ -93,24 +94,26 @@ public class PinService {
         pinSavedRepository.save(new PinSaved(null, pid, user.getId()));
     }
 
-    public List<PinPureVo> getUserCreatedPins(Long uid) {
-        return pinRepository.findAllCreatedByUserId(uid)
-                .stream()
+    private List<PinPureVo> pinConvertToPinPureVo(List<Pin> pins) {
+        return pins.stream()
                 .map(PinPureVo::new)
                 .collect(Collectors.toList());
+    }
+
+    public List<PinPureVo> getUserCreatedPins(Long uid) {
+        return pinConvertToPinPureVo(pinRepository.findAllCreatedByUserId(uid));
     }
 
     public List<PinPureVo> getUserSavedPins(Long uid) {
-        return pinRepository.findAllSavedByUserId(uid)
-                .stream()
-                .map(PinPureVo::new)
-                .collect(Collectors.toList());
+        return pinConvertToPinPureVo(pinRepository.findAllSavedByUserId(uid));
+
     }
 
     public List<PinPureVo> getPinsByCategoryId(Long cid) {
-        return pinRepository.findAllByCategoryId(cid)
-                .stream()
-                .map(PinPureVo::new)
-                .collect(Collectors.toList());
+        return pinConvertToPinPureVo(pinRepository.findAllByCategoryId(cid));
+    }
+
+    public List<PinPureVo> searchPinByAboutOrTitle(String searchTerm) {
+        return pinConvertToPinPureVo(pinRepository.findByAboutOrTitle(searchTerm));
     }
 }

@@ -34,6 +34,14 @@ public class PinController {
         return pinService.getAllPins();
     }
 
+    @GetMapping("/search")
+    @PreAuthorize("hasRole('USER')")
+    @ApiOperation("通过Title和About搜索Pin")
+    public List<PinPureVo> searchPin(@RequestParam("searchTerm") String searchTerm) {
+        System.out.println(searchTerm);
+        return pinService.searchPinByAboutOrTitle(searchTerm);
+    }
+
     @GetMapping("/{pinId}")
     @PreAuthorize("hasRole('USER')")
     @ApiOperation("通过Id获取Pin的详细信息")
