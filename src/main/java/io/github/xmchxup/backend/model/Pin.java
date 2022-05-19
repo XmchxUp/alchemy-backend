@@ -40,6 +40,13 @@ public class Pin extends BaseEntity {
     @JsonIgnore
     private List<PinSaved> saves;
 
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "comments",
+            joinColumns = @JoinColumn(name = "pin_id"),
+            inverseJoinColumns = @JoinColumn(name = "id"))
+    @JsonIgnore
+    private List<Comment> comments;
+
     @Override
     public String toString() {
         return "Pin{" +

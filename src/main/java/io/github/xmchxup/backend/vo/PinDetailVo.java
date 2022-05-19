@@ -3,6 +3,9 @@ package io.github.xmchxup.backend.vo;
 import io.github.xmchxup.backend.model.Pin;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author huayang (sunhuayangak47@gmail.com)
  */
@@ -14,7 +17,7 @@ public class PinDetailVo {
     private String about;
     private String destination;
     private UserSummaryVo postedBy;
-    //    TODO comments
+    private List<CommentVo> comments;
 
 
     public PinDetailVo(Pin pin) {
@@ -24,5 +27,10 @@ public class PinDetailVo {
         this.about = pin.getAbout();
         this.title = pin.getTitle();
         this.postedBy = new UserSummaryVo(pin.getOwner());
+        this.comments = new ArrayList<>();
+        pin.getComments().forEach(comment -> {
+            System.out.println(comment);
+            comments.add(new CommentVo(comment));
+        });
     }
 }

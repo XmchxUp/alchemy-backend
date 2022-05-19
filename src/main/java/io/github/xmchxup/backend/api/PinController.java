@@ -27,6 +27,14 @@ public class PinController {
     @Autowired
     private PinService pinService;
 
+    @GetMapping("/like")
+    @PreAuthorize("hasRole('USER')")
+    @ApiOperation("获取所有相似Pin")
+    public List<PinPureVo> getAllLikePins(@RequestParam Long pinId) {
+        var list = pinService.getAllLikePins(pinId);
+        return list.subList(0, list.size() > 4 ? 4 : list.size());
+    }
+
     @GetMapping("/all")
     @PreAuthorize("hasRole('USER')")
     @ApiOperation("获取所有Pin")
@@ -38,7 +46,6 @@ public class PinController {
     @PreAuthorize("hasRole('USER')")
     @ApiOperation("通过Title和About搜索Pin")
     public List<PinPureVo> searchPin(@RequestParam("searchTerm") String searchTerm) {
-        System.out.println(searchTerm);
         return pinService.searchPinByAboutOrTitle(searchTerm);
     }
 

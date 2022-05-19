@@ -78,10 +78,8 @@ public class PinService {
     }
 
     public List<PinPureVo> getAllPins() {
-        return pinRepository.findAll(Sort.by(Sort.Direction.DESC, "createTime"))
-                .stream()
-                .map(PinPureVo::new)
-                .collect(Collectors.toList());
+        return pinConvertToPinPureVo(pinRepository.findAll(
+                Sort.by(Sort.Direction.DESC, "createTime")));
     }
 
     public Pin getPinById(Long pinId) {
@@ -115,5 +113,15 @@ public class PinService {
 
     public List<PinPureVo> searchPinByAboutOrTitle(String searchTerm) {
         return pinConvertToPinPureVo(pinRepository.findByAboutOrTitle(searchTerm));
+    }
+
+    public List<PinPureVo> getAllLikePins(Long pinId) {
+        Pin pin = pinRepository.findById(pinId).orElseThrow(() -> new ParameterException(40000));
+
+        return pinRepository.findAllByCategoryId(pin.getCategoryId())
+                .stream()
+                .filter(p -> !p.getId().equals(pinId))
+                .map(PinPureVo::new)
+                .collect(Collectors.toList());
     }
 }

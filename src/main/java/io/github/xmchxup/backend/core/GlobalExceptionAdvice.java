@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -44,6 +45,8 @@ public class GlobalExceptionAdvice {
     }
 
     @ExceptionHandler(value = MaxUploadSizeExceededException.class)
+    @ResponseBody
+    @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
     public UnifyResponse handleUploadFileException(HttpServletRequest req, HttpException e) {
         String url = req.getRequestURI();
         String method = req.getMethod();
@@ -51,6 +54,15 @@ public class GlobalExceptionAdvice {
         return new UnifyResponse(30004, codeConfiguration.getMessage(30004), method + " " + url);
     }
 
+    @ExceptionHandler(value = AuthenticationException.class)
+    @ResponseBody
+    @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
+    public UnifyResponse handleAuthentication(HttpServletRequest req, HttpException e) {
+        String url = req.getRequestURI();
+        String method = req.getMethod();
+
+        return new UnifyResponse(20008, codeConfiguration.getMessage(20008), method + " " + url);
+    }
 
     //	已知异常
     @ExceptionHandler(value = HttpException.class)
