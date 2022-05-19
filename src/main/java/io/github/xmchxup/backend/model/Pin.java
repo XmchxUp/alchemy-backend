@@ -2,6 +2,7 @@ package io.github.xmchxup.backend.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 
@@ -15,6 +16,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Where(clause = "delete_time is null")
 public class Pin extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
