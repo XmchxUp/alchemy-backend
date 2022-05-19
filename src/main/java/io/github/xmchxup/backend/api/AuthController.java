@@ -35,10 +35,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
-import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -201,7 +199,7 @@ public class AuthController {
     @PostMapping("/logout")
     @ApiOperation("登出")
     public ResponseEntity<Void> logout() {
-        // TODO: 云服务器资源不足
+        // TODO:
         // token一但发布 就不能回收，直到过期
         // 上面rememberMe就是用来延长过期时间的
         // 解决方案可以使用Redis来保存user:token信息，每次判断token是否于redis中的是否相等
@@ -237,12 +235,6 @@ public class AuthController {
         user.setRoles(Collections.singleton(userRole));
 
         User result = userRepository.save(user);
-
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentContextPath().path("/api/users/{username}")
-                .buildAndExpand(result.getUsername()).toUri();
-
-        return ResponseEntity.created(location)
-                .body(new ApiResponseVO(true, "用户注册成功"));
+        return ResponseEntity.ok(new ApiResponseVO(true, "用户注册成功"));
     }
 }
